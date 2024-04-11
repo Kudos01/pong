@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use ::rand::prelude::*;
 
 const RECTANGLE_WIDTH: f32 = 20.;
 
@@ -60,7 +61,7 @@ fn check_move_player(p: &mut Player, keycode_up: KeyCode, keycode_down: KeyCode)
     }
 }
 
-// Point should be unit vector
+// dir of ball should be unit vector
 fn move_ball(b: &mut Ball) {
 
     b.pos.x += b.dir.x * BALL_SPEED;
@@ -84,7 +85,17 @@ async fn main() {
     let mut p1: Player = Player { pos: Point {x: OFFSET, y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0) };
     let mut p2: Player = Player { pos: Point {x: screen_width() - OFFSET*2., y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0)};
 
-    let mut ball: Ball = Ball { pos: Point { x: screen_width()/2., y: screen_height()/2. }, dir: Point {x: 1., y: 0.}};
+    let mut rng = thread_rng();
+
+    let dir_x = rng.gen_range(0. ..1.);
+    let dir_y = rng.gen_range(0. ..1.);
+
+    let modulus = ((dir_x*dir_x + dir_y*dir_y) as f64).sqrt();
+
+    let unit_x: f32 = (dir_x / modulus) as f32;
+    let unit_y: f32 = (dir_y / modulus) as f32;
+
+    let mut ball: Ball = Ball { pos: Point { x: screen_width()/2., y: screen_height()/2. }, dir: Point {x: unit_x, y: unit_y}};
 
     loop {
         clear_background(GRAY);
