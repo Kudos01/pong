@@ -71,20 +71,48 @@ fn move_ball(b: &mut Ball) {
     if b.pos.y > screen_height()-CUBE_SIDE || b.pos.y < 0.0{
         b.dir.y = -b.dir.y;
     }
-
-    if b.pos.x > screen_width()-CUBE_SIDE || b.pos.x < 0.0 {
-        b.dir.x = -b.dir.x;
-    }
 }
 
-#[macroquad::main(conf)]
-async fn main() {
+fn check_scored_points(b: &mut Ball, p1 : &mut Player, p2 : &mut Player) {
+        // If ball surpasses x axis on either side, players score points
+        if b.pos.x > screen_width()-CUBE_SIDE {
+            // b.dir.x = -b.dir.x;
+            p1.score += 1;
+            // reset ball pos
+            b.pos.x = screen_width()/2.;
+            b.pos.y = screen_height()/2.;
 
-    // Center the players at first
+            let point = get_new_ball_dir();
 
-    let mut p1: Player = Player { pos: Point {x: OFFSET, y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0) };
-    let mut p2: Player = Player { pos: Point {x: screen_width() - OFFSET*2., y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0)};
+            b.dir.x = point.x;
+            b.dir.y = point.y;
 
+        } else if b.pos.x < 0.0 {
+            p2.score += 1;
+            b.pos.x = screen_width()/2.;
+            b.pos.y = screen_height()/2.;
+
+            let point = get_new_ball_dir();
+
+            b.dir.x = point.x;
+            b.dir.y = point.y;
+        }
+}
+
+fn draw_scores(p1 : &Player, p2 : &Player) {
+    let text_params =  TextParams {
+        font_size:70,
+        ..Default::default()
+    };
+
+    draw_text_ex(&format!("{}",p1.score).as_str(),100., 100.,text_params);
+    draw_text_ex(&format!("{}",p2.score).as_str(),screen_width()-100., 100.,text_params);
+}
+
+
+// function to spawn ball in middle with random direction
+
+fn get_new_ball_dir() -> Point {
     let mut rng = thread_rng();
 
     let dir_x = rng.gen_range(0. ..1.);
@@ -95,7 +123,20 @@ async fn main() {
     let unit_x: f32 = (dir_x / modulus) as f32;
     let unit_y: f32 = (dir_y / modulus) as f32;
 
-    let mut ball: Ball = Ball { pos: Point { x: screen_width()/2., y: screen_height()/2. }, dir: Point {x: unit_x, y: unit_y}};
+    Point { x: unit_x, y: unit_y }
+}
+
+#[macroquad::main(conf)]
+async fn main() {
+
+    // Center the players at first
+
+    let mut p1: Player = Player { pos: Point {x: OFFSET, y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0) };
+    let mut p2: Player = Player { pos: Point {x: screen_width() - OFFSET*2., y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0)};
+
+    let point = get_new_ball_dir();
+
+    let mut ball: Ball = Ball { pos: Point { x: screen_width()/2., y: screen_height()/2. }, dir: Point {x: point.x, y: point.y}};
 
     loop {
         clear_background(GRAY);
@@ -115,6 +156,10 @@ async fn main() {
 
         // Ball movement
         move_ball(&mut ball);
+
+        check_scored_points(&mut ball, &mut p1, &mut p2);
+
+        draw_scores(&p1, &p2);
 
         // TODO Collisions
         ball_collision_with_player(&p1, &mut ball);
