@@ -75,6 +75,8 @@ fn move_ball(b: &mut Ball) {
 
 fn check_scored_points(b: &mut Ball, p1 : &mut Player, p2 : &mut Player) {
         // If ball surpasses x axis on either side, players score points
+
+        // ball should go toward player that won
         if b.pos.x > screen_width()-CUBE_SIDE {
             // b.dir.x = -b.dir.x;
             p1.score += 1;
@@ -84,10 +86,11 @@ fn check_scored_points(b: &mut Ball, p1 : &mut Player, p2 : &mut Player) {
 
             let point = get_new_ball_dir();
 
-            b.dir.x = point.x;
+            b.dir.x = -point.x;
             b.dir.y = point.y;
 
         } else if b.pos.x < 0.0 {
+
             p2.score += 1;
             b.pos.x = screen_width()/2.;
             b.pos.y = screen_height()/2.;
@@ -115,8 +118,8 @@ fn draw_scores(p1 : &Player, p2 : &Player) {
 fn get_new_ball_dir() -> Point {
     let mut rng = thread_rng();
 
-    let dir_x = rng.gen_range(0. ..1.);
-    let dir_y = rng.gen_range(0. ..1.);
+    let dir_x = rng.gen_range(0. ..0.5);
+    let dir_y = rng.gen_range(0. ..0.5);
 
     let modulus = ((dir_x*dir_x + dir_y*dir_y) as f64).sqrt();
 
