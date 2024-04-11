@@ -27,6 +27,27 @@ struct Ball {
     dir: Point
 }
 
+fn conf() -> Conf {
+    Conf {
+    window_title:"Pong".to_owned(),
+    window_resizable: false,
+    ..Default::default()
+  }
+}
+
+
+// Perhaps it would be better for the players and ball to store their own rectangle but here we are
+fn ball_collision_with_player(player : &Player, ball : &mut Ball) {
+
+    let ball_rect = Rect::new(ball.pos.x, ball.pos.y, CUBE_SIDE, CUBE_SIDE);
+
+    let player_rect = Rect::new(player.pos.x, player.pos.y, RECTANGLE_WIDTH, RECTANGLE_HEIGHT);
+
+    if ball_rect.intersect(player_rect).is_some() {
+        ball.dir.x = -ball.dir.x;
+    }
+}
+
 fn draw_player(p: Player) {
     draw_rectangle(p.pos.x, p.pos.y, RECTANGLE_WIDTH, RECTANGLE_HEIGHT, BLACK);
 }
@@ -55,7 +76,7 @@ fn move_ball(b: &mut Ball) {
     }
 }
 
-#[macroquad::main("Pong")]
+#[macroquad::main(conf)]
 async fn main() {
 
     // Center the players at first
@@ -81,9 +102,12 @@ async fn main() {
         // p2 movement
         check_move_player(&mut p2, KeyCode::Up, KeyCode::Down);
 
-        // TODO Ball movement
+        // Ball movement
         move_ball(&mut ball);
+
         // TODO Collisions
+        ball_collision_with_player(&p1, &mut ball);
+        ball_collision_with_player(&p2, &mut ball);
 
         next_frame().await;
     }
