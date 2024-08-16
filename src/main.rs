@@ -9,7 +9,11 @@ const OFFSET: f32 = 20.;
 
 const CUBE_SIDE: f32 = 10.;
 
-const BALL_SPEED: f32 = 5.;
+const BALL_SPEED: f32 = 1.;
+
+const PLAYER_SPEED: f32 = 2.;
+
+const WAIT_BETWEEN_COLLISIONS: i32 = 60;
 
 #[derive(Debug, Clone, Copy)]
 struct Point {
@@ -38,15 +42,21 @@ fn conf() -> Conf {
 
 
 // Perhaps it would be better for the players and ball to store their own rectangle but here we are
-fn ball_collision_with_player(player : &Player, ball : &mut Ball) {
+// Returns wether there has been a collision
+fn ball_collision_with_player(player : &Player, ball : &mut Ball) -> bool{
+
+    let mut result = false;
 
     let ball_rect = Rect::new(ball.pos.x, ball.pos.y, CUBE_SIDE, CUBE_SIDE);
 
     let player_rect = Rect::new(player.pos.x, player.pos.y, RECTANGLE_WIDTH, RECTANGLE_HEIGHT);
 
     if ball_rect.intersect(player_rect).is_some() {
+        result = true;
         ball.dir.x = -ball.dir.x;
     }
+    
+    result
 }
 
 fn draw_player(p: Player) {
@@ -55,9 +65,9 @@ fn draw_player(p: Player) {
 
 fn check_move_player(p: &mut Player, keycode_up: KeyCode, keycode_down: KeyCode) {
     if is_key_down(keycode_up) && p.pos.y > 0.{
-        p.pos.y -= 3.;
+        p.pos.y -= PLAYER_SPEED;
     } else if is_key_down(keycode_down) && p.pos.y < screen_height() - RECTANGLE_HEIGHT {
-        p.pos.y += 3.;
+        p.pos.y += PLAYER_SPEED;
     }
 }
 
@@ -133,13 +143,17 @@ fn get_new_ball_dir() -> Point {
 async fn main() {
 
     // Center the players at first
-
     let mut p1: Player = Player { pos: Point {x: OFFSET, y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0) };
     let mut p2: Player = Player { pos: Point {x: screen_width() - OFFSET*2., y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0)};
 
     let point = get_new_ball_dir();
 
     let mut ball: Ball = Ball { pos: Point { x: screen_width()/2., y: screen_height()/2. }, dir: Point {x: point.x, y: point.y}};
+
+    let mut p1_collision = false;
+    let mut p2_collision = false;
+
+    let mut counter = 0;
 
     loop {
         clear_background(GRAY);
@@ -164,9 +178,20 @@ async fn main() {
 
         draw_scores(&p1, &p2);
 
-        // TODO Collisions
-        ball_collision_with_player(&p1, &mut ball);
-        ball_collision_with_player(&p2, &mut ball);
+        // Collisions
+
+        // Once there has been a collision, wait at least 3 frames before checking again.
+        // This gets rid of a bug where the ball was still intersecting with the player and would bounce back internally.
+        if counter > 0 {
+            counter = counter -1;
+        } else{
+            p1_collision = ball_collision_with_player(&p1, &mut ball);
+            p2_collision = ball_collision_with_player(&p2, &mut ball);
+            
+            if p1_collision || p2_collision{
+                counter = WAIT_BETWEEN_COLLISIONS;
+            }
+        }
 
         next_frame().await;
     }
