@@ -1,15 +1,15 @@
 use macroquad::prelude::*;
 use ::rand::prelude::*;
 
-const RECTANGLE_WIDTH: f32 = 20.;
+const RECTANGLE_WIDTH: f32 = 15.;
 
-const RECTANGLE_HEIGHT: f32 = 100.;
+const RECTANGLE_HEIGHT: f32 = 80.;
 
 const OFFSET: f32 = 20.;
 
 const CUBE_SIDE: f32 = 10.;
 
-const BALL_SPEED: f32 = 1.;
+const BALL_SPEED: f32 = 1.5;
 
 const PLAYER_SPEED: f32 = 2.;
 
@@ -35,6 +35,8 @@ struct Ball {
 fn conf() -> Conf {
     Conf {
     window_title:"Pong".to_owned(),
+    window_width:600,
+    window_height:600,
     window_resizable: false,
     ..Default::default()
   }
@@ -124,12 +126,11 @@ fn draw_scores(p1 : &Player, p2 : &Player) {
 
 
 // function to spawn ball in middle with random direction
-
 fn get_new_ball_dir() -> Point {
     let mut rng = thread_rng();
 
-    let dir_x = rng.gen_range(0. ..0.5);
-    let dir_y = rng.gen_range(0. ..0.5);
+    let dir_x = rng.gen_range(0.25 ..0.5);
+    let dir_y = rng.gen_range(-0.25 ..0.25);
 
     let modulus = ((dir_x*dir_x + dir_y*dir_y) as f64).sqrt();
 
