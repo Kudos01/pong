@@ -151,9 +151,6 @@ async fn main() {
 
     let mut ball: Ball = Ball { pos: Point { x: screen_width()/2., y: screen_height()/2. }, dir: Point {x: point.x, y: point.y}};
 
-    let mut p1_collision = false;
-    let mut p2_collision = false;
-
     let mut counter = 0;
 
     loop {
@@ -181,13 +178,14 @@ async fn main() {
 
         // Collisions
 
-        // Once there has been a collision, wait at least 3 frames before checking again.
+        // Once there has been a collision, wait some time before checking again.
         // This gets rid of a bug where the ball was still intersecting with the player and would bounce back internally.
         if counter > 0 {
             counter = counter -1;
         } else{
-            p1_collision = ball_collision_with_player(&p1, &mut ball);
-            p2_collision = ball_collision_with_player(&p2, &mut ball);
+
+            let p1_collision = ball_collision_with_player(&p1, &mut ball);
+            let p2_collision = ball_collision_with_player(&p2, &mut ball);
             
             if p1_collision || p2_collision{
                 counter = WAIT_BETWEEN_COLLISIONS;
