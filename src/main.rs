@@ -15,6 +15,9 @@ const PLAYER_SPEED: f32 = 2.;
 
 const WAIT_BETWEEN_COLLISIONS: i32 = 60;
 
+const WINDOW_HEIGHT: i32 = 400;
+const WINDOW_WIDTH: i32 = 600;
+
 #[derive(Debug, Clone, Copy)]
 struct Point {
     x: f32,
@@ -35,8 +38,8 @@ struct Ball {
 fn conf() -> Conf {
     Conf {
     window_title:"Pong".to_owned(),
-    window_width:600,
-    window_height:600,
+    window_width:WINDOW_WIDTH,
+    window_height:WINDOW_HEIGHT,
     window_resizable: false,
     ..Default::default()
   }
