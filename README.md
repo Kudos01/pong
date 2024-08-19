@@ -2,6 +2,8 @@
 
 This repository contains a simple Pong game implementation in Rust.
 
+![alt text](/images/intro-picture2.png)
+
 ## Known problems
 - On WSL the ball speed parameter needs to be lowered significantly compared to Windows, probably has something to do with how WSL runs windowed applications.
 - Have not tested it (yet) on bare metal linux.
