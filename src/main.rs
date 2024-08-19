@@ -5,11 +5,11 @@ const RECTANGLE_WIDTH: f32 = 15.;
 
 const RECTANGLE_HEIGHT: f32 = 80.;
 
-const OFFSET: f32 = 20.;
+const OFFSET: f32 = 30.;
 
 const CUBE_SIDE: f32 = 10.;
 
-const BALL_SPEED: f32 = 1.5;
+const BALL_SPEED: f32 = 1.;
 
 const PLAYER_SPEED: f32 = 2.;
 
@@ -147,9 +147,22 @@ fn get_new_ball_dir() -> Point {
 async fn main() {
 
     // Center the players at first
-    let mut p1: Player = Player { pos: Point {x: OFFSET, y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0) };
-    let mut p2: Player = Player { pos: Point {x: screen_width() - OFFSET*2., y: screen_height()/2. - RECTANGLE_HEIGHT + OFFSET}, score: (0)};
+    let mut p1: Player = Player { 
+        pos: Point {
+            x: OFFSET, 
+            y: screen_height()/2. - RECTANGLE_HEIGHT/2.
+        }, 
+        score: (0) 
+    };
 
+    let mut p2: Player = Player {
+        pos: Point {
+            x: screen_width() - OFFSET - RECTANGLE_WIDTH, 
+            y: screen_height()/2. - RECTANGLE_HEIGHT/2.
+        }, 
+        score: (0)
+    };
+    
     let point = get_new_ball_dir();
 
     let mut ball: Ball = Ball { pos: Point { x: screen_width()/2., y: screen_height()/2. }, dir: Point {x: point.x, y: point.y}};
