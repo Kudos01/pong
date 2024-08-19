@@ -9,8 +9,7 @@ This repository contains a simple Pong game implementation in Rust.
 Download/pull the git repository and execute `cargo run`. Make sure you have rust installed, see https://www.rust-lang.org/tools/install.
 
 ## Known problems
-- On WSL the ball speed parameter needs to be lowered significantly compared to Windows, probably has something to do with how WSL runs windowed applications.
-- Have not tested it (yet) on bare metal linux.
+- `BALL_SPEED` and `PLAYER_SPEED` parameters need to be configured differently in linux versus windows, at least in my testing. On Windows parameters need to be significantly higher to achieve the same movement speed as linux.
 
 ## Future features
 - Menu with possibility to change ball speed, player speed and windows size.
